@@ -10,6 +10,8 @@ const ChatPage = () => {
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef(null);
 
+  
+
   useEffect(() => {
     if (ws) {
       const handleMessage = (event) => {
@@ -58,50 +60,60 @@ const ChatPage = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {/* Top Bar */}
-      <div className="bg-blue-500 text-white p-4 flex items-center">
-        <h1 className="text-xl font-semibold">{chatname}: RoomID: {roomId}</h1>
+      <div className="bg-blue-500 text-white p-4 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">{chatname}</h1>
+        <span className="text-lg">ROOM ID: {roomId}</span>
       </div>
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col w-full bg-white border border-gray-300 rounded-t-lg shadow-lg">
-        <div className="flex-1 p-4 overflow-auto">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${msg.sender === 'Me' ? 'text-right' : 'text-left'}`}
-            >
-              <div className={`text-sm font-semibold ${msg.sender === 'Me' ? 'text-blue-500' : 'text-gray-800'}`}>
-                {msg.sender || 'Unknown'}
-              </div>
-              <div
-                className={`inline-block px-4 py-2 rounded-lg ${msg.sender === 'Me'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-300 text-black'
-                  }`}
-              >
-
-                {msg.text}
-              </div>
-            </div>
-          ))}
-          <div ref={messagesEndRef} /> {/* For auto-scrolling */}
-        </div>
-        <div className="p-4 border-t border-gray-300 bg-white flex items-center">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="ml-4 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300"
+  <div className="flex-1 p-4 overflow-auto">
+    {messages.map((msg, index) => (
+      <div
+        key={index}
+        className={`mb-2 ${msg.sender === 'THISISANOTIFICATION' ? 'text-center' : (msg.sender === 'Me' ? 'text-right' : 'text-left')}`}
+      >
+        {msg.sender === 'THISISANOTIFICATION' ? (
+          <div
+            className="inline-block px-4 py-2 rounded-lg bg-blue-100 text-black font-bold"
           >
-            Send
-          </button>
-        </div>
+            {msg.text}
+          </div>
+        ) : (
+          <>
+            <div className={`text-sm font-semibold ${msg.sender === 'Me' ? 'text-blue-500' : 'text-gray-800'}`}>
+              {msg.sender || 'Unknown'}
+            </div>
+            <div
+              className={`inline-block px-4 py-2 rounded-lg ${msg.sender === 'Me'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-300 text-black'
+                }`}
+            >
+              {msg.text}
+            </div>
+          </>
+        )}
       </div>
+    ))}
+    <div ref={messagesEndRef} /> {/* For auto-scrolling */}
+  </div>
+  <div className="p-4 border-t border-gray-300 bg-white flex items-center">
+    <input
+      type="text"
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      placeholder="Type a message"
+      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <button
+      onClick={handleSendMessage}
+      className="ml-4 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300"
+    >
+      Send
+    </button>
+  </div>
+</div>
     </div>
   );
 };

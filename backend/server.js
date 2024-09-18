@@ -23,7 +23,7 @@ wss.on('connection', ws => {
 
   ws.on('message', (message) => {
     const parsedMessage = JSON.parse(message);
-    
+
     if (parsedMessage.type === 'create_room' || parsedMessage.type === 'join_room') {
       username = parsedMessage.username;
       users.set(ws, { userId, username });
@@ -40,13 +40,13 @@ wss.on('connection', ws => {
         rooms.set(roomId, {
           name: roomName,
           users: new Set()
-      });
+        });
         // Add the user to the room
         rooms.get(roomId).users.add(ws);
         currentRoomId = roomId;
         console.log(`Room created with ID ${roomId}`);
         // Notify the client of the room creation
-        ws.send(JSON.stringify({ type: 'room_created', roomId,roomName }));
+        ws.send(JSON.stringify({ type: 'room_created', roomId, roomName }));
         break;
 
       case 'join_room':
@@ -56,7 +56,15 @@ wss.on('connection', ws => {
           const roomName = rooms.get(parsedMessage.roomId).name;
           currentRoomId = parsedMessage.roomId;
           // Notify the client that they have joined the room
-          ws.send(JSON.stringify({ type: 'joined_room', roomId: parsedMessage.roomId,chatname:roomName}));
+          ws.send(JSON.stringify({ type: 'joined_room', roomId: parsedMessage.roomId, chatname: roomName }));
+
+          const welcomeMessage = `${username} has joined the chat.`;
+          rooms.get(parsedMessage.roomId).users.forEach(client => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+              const notification = "THISISANOTIFICATION"
+              client.send(JSON.stringify({ type: 'message', message: welcomeMessage,sender:notification }));
+            }
+          });
         } else {
           // Room does not exist
           ws.send(JSON.stringify({ type: 'error', message: 'Room does not exist' }));
@@ -65,14 +73,14 @@ wss.on('connection', ws => {
 
       case 'message':
         // Broadcast the message to all users in the room
-        
+
         if (currentRoomId && rooms.has(currentRoomId)) {
           const room = rooms.get(currentRoomId);
           const sender = username;
-          
+
           room.users.forEach(client => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify({ type: 'message', message: parsedMessage.message,sender:sender }));
+              client.send(JSON.stringify({ type: 'message', message: parsedMessage.message, sender: sender }));
             }
           });
         } else {

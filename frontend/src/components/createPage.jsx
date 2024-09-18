@@ -8,13 +8,13 @@ const CreatePage = () => {
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [chatname,setchatname] = useState('Chat');
   const navigate = useNavigate();
-/*
+
   useEffect(() => {
     if (roomId) {
       // Navigate to the chat page once the room is created
-      
+      navigate(`/chat/${roomId}`);
     }
-  }, [roomId, navigate]);*/
+  }, [roomId, navigate]);
 
   const handleCreateRoom = () => {
     if (!inputUsername) {
@@ -24,7 +24,7 @@ const CreatePage = () => {
     
     setCreatingRoom(true);
     createRoom(inputUsername,chatname);
-    navigate(`/chat/${roomId}`);
+    
   };
 
   return (

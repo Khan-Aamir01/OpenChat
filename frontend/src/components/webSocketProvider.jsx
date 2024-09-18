@@ -13,7 +13,7 @@ export const WebSocketProvider = ({ children }) => {
   const [roomId, setRoomId] = useState(null);
   const [username, setUsername] = useState('');
   const [error, setError] = useState(null);
-  const [chatname,setchatname] = useState('Chat');
+  const [chatname,setchatname] = useState('OpenChat');
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -31,6 +31,7 @@ export const WebSocketProvider = ({ children }) => {
       const data = JSON.parse(event.data);
       switch (data.type) {
         case 'room_created':
+          setchatname(data.chatname);
           setRoomId(data.roomId);
           break;
         case 'joined_room':
@@ -64,6 +65,7 @@ export const WebSocketProvider = ({ children }) => {
     if (ws) {
       ws.send(JSON.stringify({ type: 'create_room',username,chatname }));
     }
+    
   };
 
   // Function to join a room
