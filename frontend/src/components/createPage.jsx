@@ -12,9 +12,9 @@ const CreatePage = () => {
   useEffect(() => {
     if (roomId) {
       // Navigate to the chat page once the room is created
-      navigate(`/chat/${roomId}`);
+      navigate(`/chat/${roomId}`, { state: { chatname } });
     }
-  }, [roomId, navigate]);
+  }, [roomId,chatname, navigate]);
 
   const handleCreateRoom = () => {
     if (!inputUsername) {

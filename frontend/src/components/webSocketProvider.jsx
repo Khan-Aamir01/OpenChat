@@ -13,7 +13,7 @@ export const WebSocketProvider = ({ children }) => {
   const [roomId, setRoomId] = useState(null);
   const [username, setUsername] = useState('');
   const [error, setError] = useState(null);
-  const [chatname,setchatname] = useState('OpenChat');
+  const [chatname,setchatname] = useState('');
 
   // Initialize WebSocket connection
   useEffect(() => {

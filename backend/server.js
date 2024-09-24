@@ -9,33 +9,36 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const port = 3000;
 
-// Middleware to parse JSON bodies
+
 app.use(express.json());
-app.use(cors()); // Correctly invoke CORS middleware
+app.use(cors()); 
 
 const rooms = new Map();
 const users = new Map();
 
-wss.on('connection', ws => {
+wss.on('connection', ws => { // Trigger Once during Connection
   const userId = uuidv4();
   let currentRoomId = null;
   let username = null;
 
-  ws.on('message', (message) => {
+  ws.on('message', (message) => { // Trigger Everytime there is message
     const parsedMessage = JSON.parse(message);
 
     if (parsedMessage.type === 'create_room' || parsedMessage.type === 'join_room') {
       username = parsedMessage.username;
       users.set(ws, { userId, username });
-      console.log(`User ${username} connected with ID ${userId}`);
+      //console.log(`User ${username} connected with ID ${userId}`);
     }
 
     switch (parsedMessage.type) {
       case 'create_room':
-        // Generate a unique room ID
-        const roomId = '69'
+
+      // Generate a unique room ID
+      const idGenerator = IdGenerator();
+      const id = idGenerator.next().value;
+
+        const roomId = id + '';
         const roomName = parsedMessage.chatname;
-        console.log(roomName);
         // Create a room in the rooms map
         rooms.set(roomId, {
           name: roomName,
@@ -44,7 +47,8 @@ wss.on('connection', ws => {
         // Add the user to the room
         rooms.get(roomId).users.add(ws);
         currentRoomId = roomId;
-        console.log(`Room created with ID ${roomId}`);
+        //console.log(`Room created with ID ${roomId}`);
+
         // Notify the client of the room creation
         ws.send(JSON.stringify({ type: 'room_created', roomId, roomName }));
         break;
@@ -61,7 +65,7 @@ wss.on('connection', ws => {
           const welcomeMessage = `${username} has joined the chat.`;
           rooms.get(parsedMessage.roomId).users.forEach(client => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-              const notification = "THISISANOTIFICATION"
+              const notification = "THISISANOTIFICATION"; // Replace this 
               client.send(JSON.stringify({ type: 'message', message: welcomeMessage,sender:notification }));
             }
           });
@@ -97,7 +101,7 @@ wss.on('connection', ws => {
   ws.on('close', () => {
     // Remove user from the map
     users.delete(userId);
-    console.log(`User ID ${userId} disconnected`);
+    //console.log(`User ID ${userId} disconnected`);
 
     // Remove user from their room, if any
     if (currentRoomId && rooms.has(currentRoomId)) {
@@ -107,7 +111,7 @@ wss.on('connection', ws => {
       // If the room is empty after user leaves, you might want to delete it
       if (room.users.size === 0) {
         rooms.delete(currentRoomId);
-        console.log(`Room ID ${currentRoomId} deleted due to being empty`);
+        //console.log(`Room ID ${currentRoomId} deleted due to being empty`);
       }
     }
   });
@@ -117,3 +121,12 @@ wss.on('connection', ws => {
 server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+function* IdGenerator(){
+  let NUM = 10000;
+  while (true) {
+    let rand = Math.ceil(Math.random() * 100);
+    NUM += rand;
+    yield NUM;
+  }
+}
