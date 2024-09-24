@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 
 app.use(express.json());
@@ -118,7 +118,7 @@ wss.on('connection', ws => { // Trigger Once during Connection
 });
 
 // Start the HTTP server
-server.listen(port, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
