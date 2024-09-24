@@ -119,7 +119,7 @@ wss.on('connection', ws => { // Trigger Once during Connection
 
 // Start the HTTP server
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 function* IdGenerator(){
